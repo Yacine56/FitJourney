@@ -1,0 +1,121 @@
+### HEALTH (quick sanity)
+GET http://localhost:5000/api/health
+
+### REGISTER (ALL FIELDS REQUIRED)
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "yacine",
+  "email": "yacine@test.com",
+  "password": "Secret123!",
+  "fullName": "Yacine Bouziane",
+  "age": 29,
+  "height": 174,
+  "weight": 77,
+  "dailyCalorieGoal": 2400,
+  "targetWeight": 82
+}
+
+### REGISTER (NEGATIVE: missing a field → 400)
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "yacine2",
+  "email": "yacine2@test.com",
+  "password": "Secret123!",
+  "fullName": "Y B",
+  "age": 29,
+  "height": 174,
+  "weight": 77,
+  "dailyCalorieGoal": 2400
+  // "targetWeight" missing
+}
+
+### REGISTER (NEGATIVE: duplicate username/email → 409)
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "yacine",
+  "email": "yacine@test.com",
+  "password": "Secret123!",
+  "fullName": "Someone Else",
+  "age": 22,
+  "height": 170,
+  "weight": 60,
+  "dailyCalorieGoal": 2200,
+  "targetWeight": 70
+}
+
+### LOGIN (success)
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "yacine",
+  "password": "Secret123!"
+}
+
+### LOGIN (NEGATIVE: bad password → 401)
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "yacine",
+  "password": "WrongPass!"
+}
+
+### ME (works only when cookie is set by login/register)
+GET http://localhost:5000/api/auth/me
+
+### UPDATE PROFILE (ALL FIELDS REQUIRED)
+PATCH http://localhost:5000/api/auth/me
+Content-Type: application/json
+
+{
+  "fullName": "Yacine B.",
+  "age": 30,
+  "height": 175,
+  "weight": 78,
+  "dailyCalorieGoal": 2300,
+  "targetWeight": 82
+}
+
+### UPDATE PROFILE (NEGATIVE: missing a field → 400)
+PATCH http://localhost:5000/api/auth/me
+Content-Type: application/json
+
+{
+  "fullName": "Missing Field Demo",
+  "age": 30,
+  "height": 175,
+  "weight": 78,
+  "dailyCalorieGoal": 2300
+  // targetWeight missing
+}
+
+### CHANGE PASSWORD (success)
+POST http://localhost:5000/api/auth/change-password
+Content-Type: application/json
+
+{
+  "currentPassword": "Secret123!",
+  "newPassword": "EvenMoreSecret456!"
+}
+
+### CHANGE PASSWORD (NEGATIVE: wrong current → 400)
+POST http://localhost:5000/api/auth/change-password
+Content-Type: application/json
+
+{
+  "currentPassword": "not_the_right_one",
+  "newPassword": "x"
+}
+
+### LOGOUT (clears cookie)
+POST http://localhost:5000/api/auth/logout
+
+### ME after logout (NEGATIVE: should be 401)
+GET http://localhost:5000/api/auth/me
