@@ -10,5 +10,9 @@
   "description": "",
   "devDependencies": {
     "prettier": "3.6.2"
+  },
+  "dependencies": {
+    "flowbite": "^3.1.2",
+    "flowbite-react": "^0.12.8"
   }
 }
