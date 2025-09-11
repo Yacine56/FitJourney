@@ -7,11 +7,13 @@ const PUBLIC =
   "username email fullName age height weight dailyCalorieGoal targetWeight createdAt updatedAt";
 
 function setCookie(res, token) {
+  const isProd = process.env.NODE_ENV === "production";
+
   res.cookie(process.env.COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false,                  // set true when your site uses HTTPS
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    sameSite: isProd ? "none" : "lax",
+    secure: isProd, // requires HTTPS in production
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 }
 

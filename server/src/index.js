@@ -10,7 +10,22 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+/**
+ * Allow both local dev and the deployed frontend.
+ * Express CORS accepts an array for "origin".
+ */
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_ORIGIN, // e.g. https://fitjourney.vercel.app
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
