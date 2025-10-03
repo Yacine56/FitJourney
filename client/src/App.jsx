@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Profile from "./pages/profile";
+import Workout from "./pages/Workout";
 
 export default function App() {
   const { user, logout } = useAuth();
@@ -43,6 +44,14 @@ export default function App() {
           <Route
             path="*"
             element={<Navigate to={user ? "/home" : "/login"} replace />}
+          />
+          <Route
+            path="/workout"
+            element={
+              <ProtectedRoute>
+                <Workout />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </div>
