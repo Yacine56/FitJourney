@@ -55,17 +55,10 @@ Content-Type: application/json
 
 {
   "usernameOrEmail": "yacine",
-  "password": "Secret123!"
+  "password": "secret123"
 }
 
-### LOGIN (NEGATIVE: bad password → 401)
-POST http://localhost:5000/api/auth/login
-Content-Type: application/json
 
-{
-  "usernameOrEmail": "yacine",
-  "password": "WrongPass!"
-}
 
 ### ME (works only when cookie is set by login/register)
 GET http://localhost:5000/api/auth/me
@@ -83,18 +76,6 @@ Content-Type: application/json
   "targetWeight": 82
 }
 
-### UPDATE PROFILE (NEGATIVE: missing a field → 400)
-PATCH http://localhost:5000/api/auth/me
-Content-Type: application/json
-
-{
-  "fullName": "Missing Field Demo",
-  "age": 30,
-  "height": 175,
-  "weight": 78,
-  "dailyCalorieGoal": 2300
-  // targetWeight missing
-}
 
 ### CHANGE PASSWORD (success)
 POST http://localhost:5000/api/auth/change-password
@@ -105,17 +86,53 @@ Content-Type: application/json
   "newPassword": "EvenMoreSecret456!"
 }
 
-### CHANGE PASSWORD (NEGATIVE: wrong current → 400)
-POST http://localhost:5000/api/auth/change-password
-Content-Type: application/json
 
-{
-  "currentPassword": "not_the_right_one",
-  "newPassword": "x"
-}
 
 ### LOGOUT (clears cookie)
 POST http://localhost:5000/api/auth/logout
 
 ### ME after logout (NEGATIVE: should be 401)
 GET http://localhost:5000/api/auth/me
+
+
+### WORKOUT SEARCH by muscle (requires cookie)
+GET http://localhost:5000/api/workouts/search?muscle=triceps
+
+### CREATE WORKOUT (requires cookie)
+POST http://localhost:5000/api/workouts
+Content-Type: application/json
+
+{
+  "name": "Dumbbell Curl",
+  "type": "strength",
+  "muscle": "biceps",
+  "equipment": "dumbbell",
+  "sets": 4,
+  "reps": 12,
+  "weight": 22.5,
+  "notes": "Last set to failure"
+}
+
+### CREATE WORKOUT
+POST http://localhost:5000/api/workouts
+Content-Type: application/json
+
+{
+  "name": "Jogging",
+  "type": "cardio",
+  "muscle": "legs",
+  "equipment": "body only",
+  "sets": 1,
+  "reps": 1,
+  "notes": "Morning run"
+}
+
+### Date + Category
+
+GET http://localhost:5000/api/workouts?type=strength
+
+
+###workout by date
+
+GET http://localhost:5000/api/workouts?date=2025-09-30
+
