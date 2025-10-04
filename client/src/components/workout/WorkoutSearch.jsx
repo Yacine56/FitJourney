@@ -15,7 +15,10 @@ export default function WorkoutSearch({ onSelect }) {
   }
 
   return (
-    <Paper sx={{ p: 2, mb: 3 }}>
+    <Paper sx={{ p: 2, mb: 3,  borderRadius: 3,
+    backgroundColor: "rgba(255, 255, 255, 0.85)", // semi-transparent white
+    backdropFilter: "blur(6px)", // frosted glass effect
+    boxShadow: 3 }}>
       {/* Search Bar */}
       <form onSubmit={handleSearch} style={{ display: "flex", gap: "8px" }}>
         <TextField

@@ -136,3 +136,8 @@ GET http://localhost:5000/api/workouts?type=strength
 
 GET http://localhost:5000/api/workouts?date=2025-09-30
 
+
+### 3. Search meals (FatSecret API lookup)
+GET http://localhost:5000/api/meals/search?query=300g grilled chicken
+
+

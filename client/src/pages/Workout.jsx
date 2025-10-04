@@ -71,13 +71,17 @@ export default function Workout() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      
       <WorkoutSearch onSelect={handleSelect} />
 
       <Box sx={{ mt: 3 }}>
         <Grid container spacing={3} alignItems="flex-start">
   {/* Workout List (left side) */}
   <Grid item xs={12} md={5}>
-    <Paper sx={{ p: 2, borderRadius: 2 }}>
+    <Paper sx={{ p: 2, borderRadius: 2 ,
+       backgroundColor: "rgba(255, 255, 255, 0.85)", // semi-transparent
+    backdropFilter: "blur(6px)", // glassy effect
+     }}>
       <WorkoutList ref={listRef} onDelete={handleDelete} />
     </Paper>
   </Grid>
@@ -91,6 +95,8 @@ export default function Workout() {
           borderRadius: 2,
           display: "flex",
           flexDirection: "column",
+           backgroundColor: "rgba(255, 255, 255, 0.85)", // semi-transparent
+            backdropFilter: "blur(6px)", // glassy effect
           gap: 2,
         }}
       >
