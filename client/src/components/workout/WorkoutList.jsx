@@ -137,14 +137,14 @@ const WorkoutList = forwardRef(({ onDelete, onEdit }, ref) => {
                     >
                       Delete
                     </Button>
-                    <Button
+                  {/*  <Button
                       variant="contained"
                       color="secondary"
                       size="small"
                       onClick={() => onEdit && onEdit(w)}
                     >
                       Edit
-                    </Button>
+                    </Button>*/}
                   </TableCell>
                 </TableRow>
               ))
