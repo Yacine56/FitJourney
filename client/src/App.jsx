@@ -4,7 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/profile";
 import Workout from "./pages/Workout";
 import Meal from "./pages/Meal";
@@ -38,17 +38,17 @@ export default function App() {
         <Routes>
           <Route
             path="/login"
-            element={user ? <Navigate to="/home" replace /> : <Login />}
+            element={user ? <Navigate to="/dashboard" replace /> : <Login />}
           />
           <Route
             path="/signup"
-            element={user ? <Navigate to="/home" replace /> : <Signup />}
+            element={user ? <Navigate to="/dashboard" replace /> : <Signup />}
           />
           <Route
-            path="/home"
+            path="/dashboard"
             element={
               <ProtectedRoute>
-                <Home />
+                <Dashboard />
               </ProtectedRoute>
             }
           />

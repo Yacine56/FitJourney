@@ -206,7 +206,7 @@ export default function Profile() {
 
             <Grid item xs={12} md={4}>
               <TextField
-                label="Weight (kg)"
+                label="Weight (lbs)"
                 type="number"
                 fullWidth
                 value={form.weight}
@@ -228,7 +228,7 @@ export default function Profile() {
 
             <Grid item xs={12} md={6}>
               <TextField
-                label="Target Weight (kg)"
+                label="Target Weight (lbs)"
                 type="number"
                 fullWidth
                 value={form.targetWeight}

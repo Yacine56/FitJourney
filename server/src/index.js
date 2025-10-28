@@ -7,6 +7,8 @@ import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import workoutRoutes from "./routes/workout.routes.js";
 import mealRoutes from "./routes/meal.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+import weightRoutes from "./routes/weight.routes.js";
 
 
 dotenv.config();
@@ -40,6 +42,8 @@ app.get("/api/health", (_req, res) =>
 app.use("/api/auth", authRoutes);
 app.use("/api/workouts", workoutRoutes);
 app.use("/api/meals", mealRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/weight", weightRoutes); 
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {

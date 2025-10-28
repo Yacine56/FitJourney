@@ -14,6 +14,8 @@ import {
   DialogActions,
   Grid,
   Box,
+  Tooltip,
+  Fade,
 } from "@mui/material";
 
 export default function MealSearch({ onLog, onAddCustom }) {
@@ -31,9 +33,7 @@ export default function MealSearch({ onLog, onAddCustom }) {
 
     const res = await fetch(
       `http://localhost:5000/api/meals/search?query=${query}`,
-      {
-        credentials: "include",
-      }
+      { credentials: "include" }
     );
     const data = await res.json();
 
@@ -57,16 +57,23 @@ export default function MealSearch({ onLog, onAddCustom }) {
         boxShadow: 3,
       }}
     >
+      {/* Title */}
+      <Typography
+        variant="h6"
+        sx={{ mb: 2, fontWeight: "bold", color: "#1976d2" }}
+      >
+        Search for a Meal 🍎
+      </Typography>
+
       {/* Search + Custom button row */}
       <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-        {/* Form (input + search button) */}
         <form
           onSubmit={handleSearch}
           style={{ display: "flex", flexGrow: 1, gap: "8px" }}
         >
           <TextField
             label="Search Your Meal"
-            placeholder="ex: 200g chicken and 2 bananas"
+            placeholder="e.g., 200 g chicken, 1 cup rice and 2 bananas"
             fullWidth
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -80,24 +87,25 @@ export default function MealSearch({ onLog, onAddCustom }) {
           </Button>
         </form>
 
-        {/* Custom Meal Button */}
-        <Button
-          variant="outlined"
-          sx={{ minWidth: "150px", whiteSpace: "nowrap" }}
-          onClick={onAddCustom}
-        >
-          + ADD CUSTOM MEAL
-        </Button>
+        <Tooltip title="Manually enter your own meal values">
+          <Button
+            variant="outlined"
+            sx={{ minWidth: "150px", whiteSpace: "nowrap" }}
+            onClick={onAddCustom}
+          >
+            + Create Custom Meal
+          </Button>
+        </Tooltip>
       </Box>
 
       {/* Note */}
       <Typography
         variant="caption"
         color="text.secondary"
-        sx={{ mt: 1, display: "block" }}
+        sx={{ mt: 1, mb: 1.5, display: "block" }}
       >
-        Default serving is usually 100 grams or 1 cup depending on the food. You
-        can specify amounts (e.g. "250g rice", "2 bananas and 1 cup milk").
+        Default serving: 100 g or 1 cup (you can specify amounts like “250 g rice”
+        or “2 bananas”).
       </Typography>
 
       {/* Results */}
@@ -105,64 +113,66 @@ export default function MealSearch({ onLog, onAddCustom }) {
         {results.map((item, idx) => {
           const header = userParts[idx] || item.mealName;
           return (
-            <Grid item key={idx}>
-              <Card
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  width: 260,
-                  height: 220,
-                  border: "1px solid #e0e0e0",
-                  borderRadius: 2,
-                  transition: "0.3s",
-                  "&:hover": { boxShadow: 4 },
-                }}
-              >
-                <CardContent>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: "bold", color: "#1976d2", mb: 1 }}
-                  >
-                    {header}
-                  </Typography>
-                  <Typography variant="body2">
-                    Calories: {item.calories.toFixed(2)}
-                  </Typography>
-                  <Typography variant="body2">
-                    Protein: {item.protein} g
-                  </Typography>
-                  <Typography variant="body2">
-                    Carbs: {item.carbs} g
-                  </Typography>
-                  <Typography variant="body2">
-                    Fats: {item.fats} g
-                  </Typography>
-                </CardContent>
-                <CardActions sx={{ justifyContent: "center" }}>
-                  <Button
-                    size="small"
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#18b5a7",
-                      borderRadius: "20px",
-                      px: 3,
-                    }}
-                    onClick={async () => {
-                      await fetch("http://localhost:5000/api/meals", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        credentials: "include",
-                        body: JSON.stringify({ ...item, mealName: header }),
-                      });
-                      onLog("Meal logged successfully!"); // ✅ snackbar + refresh
-                    }}
-                  >
-                    Log Meal
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
+            <Fade in={true} timeout={400 + idx * 100} key={idx}>
+              <Grid item>
+                <Card
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    width: 260,
+                    height: 220,
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 2,
+                    transition: "0.3s",
+                    "&:hover": { boxShadow: 4 },
+                  }}
+                >
+                  <CardContent>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: "bold", color: "#1976d2", mb: 1 }}
+                    >
+                      {header}
+                    </Typography>
+                    <Typography variant="body2">
+                      Calories: {item.calories.toFixed(2)}
+                    </Typography>
+                    <Typography variant="body2">
+                      Protein: {item.protein} g
+                    </Typography>
+                    <Typography variant="body2">
+                      Carbs: {item.carbs} g
+                    </Typography>
+                    <Typography variant="body2">
+                      Fats: {item.fats} g
+                    </Typography>
+                  </CardContent>
+                  <CardActions sx={{ justifyContent: "center" }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      sx={{
+                        bgcolor: "#18b5a7",
+                        borderRadius: "20px",
+                        px: 3,
+                      }}
+                      onClick={async () => {
+                        await fetch("http://localhost:5000/api/meals", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          credentials: "include",
+                          body: JSON.stringify({ ...item, mealName: header }),
+                        });
+                        onLog("Meal logged successfully!"); // ✅ snackbar + refresh
+                      }}
+                    >
+                      Log Meal
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            </Fade>
           );
         })}
       </Grid>
@@ -172,7 +182,7 @@ export default function MealSearch({ onLog, onAddCustom }) {
         <DialogTitle>Food Not Found</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Sorry, we couldn’t find nutrition info for "{query}". Please try
+            Sorry, we couldn’t find nutrition info for “{query}”. Please try
             again with another food.
           </DialogContentText>
         </DialogContent>
