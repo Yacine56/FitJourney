@@ -12,10 +12,10 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate,useLocation  } from "react-router-dom";
 
 const authedLinks = [
-  { label: "Home", to: "/home" },
+  { label: "Dashboard", to: "/dashboard" },
   { label: "Meals", to: "/meals" },
   { label: "Workout", to: "/workout" },
   { label: "Profile", to: "/profile" },
@@ -24,6 +24,7 @@ const authedLinks = [
 export default function AppNavbar({ authed, onLogout }) {
   const [open, setOpen] = useState(false);
   const nav = useNavigate();
+  const location = useLocation();
 
   const handleNav = (to) => {
     setOpen(false);
@@ -50,25 +51,41 @@ export default function AppNavbar({ authed, onLogout }) {
           <Typography
             variant="h6"
             sx={{ fontWeight: 700, cursor: "pointer" }}
-            onClick={() => nav(authed ? "/home" : "/login")}
+            onClick={() => nav(authed ? "/dashboard" : "/login")}
           >
             FitJourney
           </Typography>
 
           {/* desktop links */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, ml: 3, gap: 1 }}>
-            {authed &&
-              authedLinks.map((l) => (
-                <Button
-                  key={l.to}
-                  color="inherit"
-                  component={RouterLink}
-                  to={l.to}
-                >
-                  {l.label}
-                </Button>
-              ))}
-          </Box>
+          {/* desktop links */}
+<Box sx={{ display: { xs: "none", md: "flex" }, ml: 3, gap: 1 }}>
+  {authed &&
+    authedLinks.map((l) => {
+      const isActive = location.pathname.startsWith(l.to); // ✅ highlight active route
+      return (
+        <Button
+          key={l.to}
+          color="inherit"
+          component={RouterLink}
+          to={l.to}
+          sx={{
+            fontWeight: isActive ? 700 : 400,
+            borderBottom: isActive ? "2px solid white" : "none",
+            borderRadius: 0,
+            color: isActive ? "#fff" : "rgba(255,255,255,0.85)",
+            transition: "all 0.2s ease",
+            "&:hover": {
+              color: "#fff",
+              borderBottom: "2px solid white",
+            },
+          }}
+        >
+          {l.label}
+        </Button>
+      );
+    })}
+</Box>
+
 
           <Box sx={{ flex: 1 }} />
 

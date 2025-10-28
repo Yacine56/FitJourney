@@ -73,7 +73,7 @@ export default function MealSummary({ refreshKey }) {
         You’ve reached {percent}% of your daily goal of {goal} calories
       </Typography>
       <Typography variant="body2" color="text.secondary">
-        Total logged today: {totalCalories.toFixed(2)} kcal
+        Total logged today: {Math.round(totalCalories)} kcal
       </Typography>
     </Box>
   );

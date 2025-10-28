@@ -13,11 +13,17 @@ import {
   TextField,
 } from "@mui/material";
 
+// ✅ Helper to get correct local date string (prevents UTC offset issues)
+function getLocalDateString() {
+  const now = new Date();
+  const offset = now.getTimezoneOffset();
+  const local = new Date(now.getTime() - offset * 60000);
+  return local.toISOString().split("T")[0];
+}
+
 const WorkoutList = forwardRef(({ onDelete, onEdit }, ref) => {
   const [workouts, setWorkouts] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0] // default today
-  );
+  const [selectedDate, setSelectedDate] = useState(getLocalDateString()); // ✅ fixed local date
 
   // 🔹 Function to fetch workouts (exposed to parent)
   async function fetchWorkouts(date = selectedDate) {
@@ -63,9 +69,7 @@ const WorkoutList = forwardRef(({ onDelete, onEdit }, ref) => {
         />
         <Button
           variant="outlined"
-          onClick={() =>
-            setSelectedDate(new Date().toISOString().split("T")[0])
-          }
+          onClick={() => setSelectedDate(getLocalDateString())} // ✅ reset correctly
         >
           Reset to Today
         </Button>
@@ -137,14 +141,16 @@ const WorkoutList = forwardRef(({ onDelete, onEdit }, ref) => {
                     >
                       Delete
                     </Button>
-                  {/*  <Button
+                    {/* 
+                    <Button
                       variant="contained"
                       color="secondary"
                       size="small"
                       onClick={() => onEdit && onEdit(w)}
                     >
                       Edit
-                    </Button>*/}
+                    </Button> 
+                    */}
                   </TableCell>
                 </TableRow>
               ))

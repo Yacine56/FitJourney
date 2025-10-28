@@ -140,4 +140,15 @@ GET http://localhost:5000/api/workouts?date=2025-09-30
 ### 3. Search meals (FatSecret API lookup)
 GET http://localhost:5000/api/meals/search?query=300g grilled chicken
 
+###Dashboard 
+GET http://localhost:5000/api/dashboard
 
+
+###LOG weight history
+POST http://localhost:5000/api/weight
+Content-Type: application/json
+Cookie: fitjourney_token=...
+
+{
+  "weight": 77
+}
