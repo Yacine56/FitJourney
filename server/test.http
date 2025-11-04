@@ -152,3 +152,6 @@ Cookie: fitjourney_token=...
 {
   "weight": 77
 }
+
+### Search meals with variable
+GET http://localhost:5000/api/meals/search?query=banana
