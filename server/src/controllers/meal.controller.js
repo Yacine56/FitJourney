@@ -1,5 +1,5 @@
 import Meal from "../models/Meal.js";
-import { fetchNutritionix } from "../services/nutritionix.api.js";
+import { aiParseNutrition } from "../services/ai.nutrition.js";
 
 /** POST /api/meals
  * Body: { mealName, calories, protein, carbs, fats }
@@ -81,9 +81,12 @@ export async function searchMeals(req, res) {
     const query = (req.query.query || "").trim();
     if (!query) return res.status(400).json({ error: "Query is required" });
 
-    const results = await fetchNutritionix(query);
-    res.json({ results });
+    const { items } = await aiParseNutrition(query);
+
+    // response shape matches old Nutritionix style
+    res.json({ results: items });
   } catch (e) {
-    res.status(502).json({ error: e.message || "Failed to fetch from Nutritionix" });
+    console.error("AI nutrition error:", e);
+    res.status(502).json({ error: "Failed to get nutrition info via AI" });
   }
 }
