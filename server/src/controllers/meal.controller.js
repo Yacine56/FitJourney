@@ -86,6 +86,7 @@ export async function searchMeals(req, res) {
     // response shape matches old Nutritionix style
     res.json({ results: items });
   } catch (e) {
+   
     console.error("AI nutrition error:", e);
     res.status(502).json({ error: "Failed to get nutrition info via AI" });
   }

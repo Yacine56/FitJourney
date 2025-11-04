@@ -4,91 +4,76 @@ import crypto from "crypto";
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
-/**
- * Tiny in-memory cache (optional but cost-friendly).
- */
 const cache = new Map();
-const keyOf = (q) => "nutri:" + crypto.createHash("sha256").update(q).digest("hex");
+const k = (q) => "nutri:" + crypto.createHash("sha256").update(q).digest("hex");
 
-/**
- * Parse a free-text meal query and return structured nutrition.
- * We use OpenAI Responses API with a JSON schema for reliable fields.
- */
 export async function aiParseNutrition(query) {
-  const cacheKey = keyOf(query.trim().toLowerCase());
+  query = query.trim().toLowerCase();
+  const cacheKey = k(query);
   if (cache.has(cacheKey)) return cache.get(cacheKey);
 
-  const schema = {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-      items: {
-        type: "array",
+  const functionDef = {
+    name: "return_nutrition_data",
+    description: "Return nutrition info for food query",
+    parameters: {
+      type: "object",
+      properties: {
         items: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            // Friendly display
-            mealName: { type: "string" },
-            // Parsed serving
-            quantity: { type: "number" },
-            unit: { type: "string", enum: ["g", "ml", "cup", "tbsp", "tsp", "piece", "slice", "oz"] },
-            // Macros (per the parsed serving)
-            calories: { type: "number" },
-            protein: { type: "number" }, // grams
-            carbs: { type: "number" },   // grams
-            fats: { type: "number" }     // grams
-          },
-          required: ["mealName", "calories", "protein", "carbs", "fats"],
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              mealName: { type: "string" },
+              calories: { type: "number" },
+              protein: { type: "number" },
+              carbs: { type: "number" },
+              fats: { type: "number" }
+            },
+            required: ["mealName", "calories", "protein", "carbs", "fats"]
+          }
         }
       },
-      notes: { type: "string" }
-    },
-    required: ["items"]
+      required: ["items"]
+    }
   };
 
-  const system = [
-    "You extract nutrition for everyday foods from short text.",
-    "Assume common items if ambiguous. Choose realistic default sizes when none are given.",
-    "Units: grams for macros; calories in kcal.",
-    "Return values for the amount the user wrote (e.g., '250g rice', '2 bananas and 1 cup milk').",
-    "Round calories to the nearest integer; macros to 2 decimals.",
-    "Keep items separate (one entry per matched food)."
-  ].join(" ");
+  const systemPrompt = `
+You are a nutrition assistant. Extract calories and macros.
+If serving not given, assume a realistic portion.
+Round calories to integers and macros to 2 decimals.
+`;
 
-  const user = `User query: "${query}"`;
+  try {
+    const response = await client.chat.completions.create({
+      model: MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: query }
+      ],
+      functions: [functionDef],
+      function_call: { name: "return_nutrition_data" },
+      temperature: 0.2
+    });
 
-  const resp = await client.responses.create({
-    model: MODEL,
-    input: [
-      { role: "system", content: system },
-      { role: "user", content: user }
-    ],
-    response_format: {
-      type: "json_schema",
-      json_schema: { name: "nutrition", schema, strict: true }
-    },
-    temperature: 0.2
-  });
+    const toolData = JSON.parse(
+      response.choices[0].message.function_call.arguments
+    );
 
-  // Responses API returns content->[json]
-  const content = resp.output?.[0]?.content?.[0];
-  const json = content?.type === "json" ? JSON.parse(content.text) : JSON.parse(resp.output_text);
+    // normalize
+    const items = toolData.items.map(x => ({
+      mealName: x.mealName,
+      calories: Math.round(x.calories),
+      protein: Number(x.protein.toFixed(2)),
+      carbs: Number(x.carbs.toFixed(2)),
+      fats: Number(x.fats.toFixed(2))
+    }));
 
-  // Normalize & safety guards
-  const items = (json.items || []).map((x) => ({
-    mealName: String(x.mealName || "").slice(0, 120) || "item",
-    calories: Math.round(Number(x.calories) || 0),
-    protein: Number(x.protein ?? 0),
-    carbs: Number(x.carbs ?? 0),
-    fats: Number(x.fats ?? 0),
-    // optional display units (not required by your DB, but nice to keep)
-    quantity: x.quantity == null ? undefined : Number(x.quantity),
-    unit: x.unit || undefined,
-  }));
+    const result = { items };
+    cache.set(cacheKey, result);
+    return result;
 
-  const result = { items, notes: json.notes || "" };
-
-  cache.set(cacheKey, result);
-  return result;
+  } catch (err) {
+    console.error("AI nutrition error:", err);
+    throw new Error("Failed to fetch nutrition info");
+  }
 }
