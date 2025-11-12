@@ -73,8 +73,10 @@ export default function WeightTracker() {
         borderRadius: 3,
         backgroundColor: "rgba(255,255,255,0.85)",
         backdropFilter: "blur(6px)",
-        boxShadow: 3,
+        boxShadow: 0,
         mb: 4,
+        backgroundColor: "transparent"
+        
       }}
     >
       <Typography

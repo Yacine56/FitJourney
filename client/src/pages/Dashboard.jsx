@@ -5,7 +5,9 @@ import WeightTracker from "../components/Dashboard/WeightTracker";
 import CaloriesChart from "../components/Dashboard/CaloriesChart";
 import MealList from "../components/meals/MealList";
 import WorkoutList from "../components/workout/WorkoutList";
-
+import MacroRings from "../components/Dashboard/MacroRings";
+import CoachSuggestion from "../components/Dashboard/CoachSuggestion";
+ 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "rgba(255,255,255,0.9)",
   padding: theme.spacing(3),
@@ -28,11 +30,13 @@ export default function Dashboard() {
         py: { xs: 3, md: 6 },
         px: { xs: 2, sm: 4, md: 8 },
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "space-between",
         alignItems: "flex-start",
+        gap: 3,
       }}
     >
-      <Box sx={{ width: "100%", maxWidth: "1400px" }}>
+      {/* ✅ Left side (Main) */}
+      <Box sx={{ flexGrow: 1, maxWidth: "1400px" }}>
         <Grid
           container
           rowSpacing={4}
@@ -40,39 +44,41 @@ export default function Dashboard() {
           justifyContent="center"
           alignItems="stretch"
         >
-          {/* === Calories Chart === */}
           <Grid item xs={12} md={6}>
-            <Item>
-           
-              <CaloriesChart />
-            </Item>
+            <Item><CaloriesChart /></Item>
           </Grid>
 
-          {/* === Weight Tracker === */}
           <Grid item xs={12} md={6}>
-            <Item>
-              
-              <WeightTracker />
-            </Item>
+            <Item><WeightTracker /></Item>
           </Grid>
 
-          {/* === Meal List === */}
           <Grid item xs={12} md={6}>
-            <Item>
-              
-              <MealList />
-            </Item>
+            <Item><MealList /></Item>
           </Grid>
 
-          {/* === Workout List === */}
           <Grid item xs={12} md={6}>
-            <Item>
-            
-              <WorkoutList />
-            </Item>
+            <Item><WorkoutList /></Item>
           </Grid>
         </Grid>
       </Box>
+
+      {/* ✅ Right Sticky Macro Rings */}
+      <Box
+        sx={{
+          width: { xs: "100%", lg: "360px" }, // full width on mobile, sidebar on desktop
+          position: { xs: "static", lg: "sticky" },
+          top: 20,
+          flexShrink: 0,
+        }}
+      >
+        <Item>
+          <MacroRings />
+        </Item>
+        
+          <CoachSuggestion />
+       
+      </Box>
+      
     </Box>
   );
 }

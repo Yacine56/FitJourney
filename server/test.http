@@ -154,4 +154,4 @@ Cookie: fitjourney_token=...
 }
 
 ### Search meals with variable
-GET http://localhost:5000/api/meals/search?query=banana
+GET http://localhost:5000/api/meals/search?query=i had 3 banans 110 gr of chicken 150 gr of rice
