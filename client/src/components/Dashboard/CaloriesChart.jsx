@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
   Label,
 } from "recharts";
-import view_api_url from "../../../.env"
+
 
 export default function CaloriesChart() {
   const [data, setData] = useState([]);

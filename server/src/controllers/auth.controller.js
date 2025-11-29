@@ -7,14 +7,21 @@ const PUBLIC =
   "username email fullName age height weight dailyCalorieGoal targetWeight createdAt updatedAt";
 
 function setCookie(res, token) {
-  // Always cross-site in your workflow (local frontend → remote backend)
+  const isProduction = process.env.NODE_ENV === "production";
+
+  // Local dev (localhost frontend)
+  const isLocal =
+    process.env.CLIENT_ORIGIN?.includes("localhost") ||
+    !isProduction;
+
   res.cookie(process.env.COOKIE_NAME, token, {
     httpOnly: true,
-    secure: true,        
-    sameSite: "none",    // Must be "none" for cross-site cookies
+    sameSite: isLocal ? "lax" : "none", // localhost = lax / production = none
+    secure: !isLocal,                   // localhost = false / production = true
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 }
+
 // POST /api/auth/register
 export async function register(req, res) {
   // because everything is required, destructure all
