@@ -10,7 +10,7 @@ function setCookie(res, token) {
   // Always cross-site in your workflow (local frontend → remote backend)
   res.cookie(process.env.COOKIE_NAME, token, {
     httpOnly: true,
-    secure: true,        // Render uses HTTPS → must be true
+    secure: true,        
     sameSite: "none",    // Must be "none" for cross-site cookies
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
