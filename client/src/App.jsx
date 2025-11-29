@@ -63,7 +63,7 @@ export default function App() {
           {/* Add later: /meals, /workout, /profile protected routes */}
           <Route
             path="*"
-            element={<Navigate to={user ? "/home" : "/login"} replace />}
+            element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
           />
           <Route
             path="/workout"
