@@ -24,7 +24,7 @@ export default function Login() {
     }
     const data = await res.json();
     setUser(data.user);
-    window.location.href = "/home";
+    window.location.href = "/dashboard";
   }
 
   return (
