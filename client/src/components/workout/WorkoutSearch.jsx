@@ -18,7 +18,7 @@ export default function WorkoutSearch({ onSelect }) {
   async function handleSearch(e) {
     e.preventDefault();
     const res = await fetch(
-      `http://localhost:5000/api/workouts/search?muscle=${query}`,
+      `${import.meta.env.VITE_API_URL}/api/workouts/search?muscle=${query}`,
       { credentials: "include" }
     );
     const data = await res.json();

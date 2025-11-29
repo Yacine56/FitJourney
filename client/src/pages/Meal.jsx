@@ -22,7 +22,7 @@ export default function Meal() {
 
   async function handleDelete(id) {
     try {
-      const res = await fetch(`http://localhost:5000/api/meals/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/meals/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

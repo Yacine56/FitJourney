@@ -29,7 +29,7 @@ const WorkoutList = forwardRef(({ onDelete, onEdit }, ref) => {
   async function fetchWorkouts(date = selectedDate) {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/workouts?date=${date}`,
+        `${import.meta.env.VITE_API_URL}/api/workouts?date=${date}`,
         { credentials: "include" }
       );
       const data = await res.json();

@@ -32,7 +32,7 @@ export default function MealSearch({ onLog, onAddCustom }) {
     setUserParts(parts);
 
     const res = await fetch(
-      `http://localhost:5000/api/meals/search?query=${query}`,
+      `${import.meta.env.VITE_API_URL}/api/meals/search?query=${query}`,
       { credentials: "include" }
     );
     const data = await res.json();
@@ -162,7 +162,7 @@ export default function MealSearch({ onLog, onAddCustom }) {
                 variant="contained"
                 sx={{ bgcolor: "#18b5a7", borderRadius: "20px", px: 3 }}
                 onClick={async () => {
-                  await fetch(`http://localhost:5000/api/meals`, {
+                  await fetch(`${import.meta.env.VITE_API_URL}/api/meals`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",

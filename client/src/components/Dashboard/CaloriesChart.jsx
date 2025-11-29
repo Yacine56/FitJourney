@@ -13,13 +13,14 @@ import {
   ResponsiveContainer,
   Label,
 } from "recharts";
+import view_api_url from "../../../.env"
 
 export default function CaloriesChart() {
   const [data, setData] = useState([]);
 
   async function fetchCalories() {
     try {
-      const res = await fetch("http://localhost:5000/api/meals", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/meals`, {
         credentials: "include",
       });
       const result = await res.json();

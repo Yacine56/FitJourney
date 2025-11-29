@@ -65,7 +65,7 @@ export default function MacroRings() {
   const [macros, setMacros] = useState(null);
 
   async function loadData() {
-    const res = await fetch("http://localhost:5000/api/dashboard", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/dashboard`, {
       credentials: "include",
     });
     const data = await res.json();
@@ -117,7 +117,7 @@ export default function MacroRings() {
         textAlign="center"
         sx={{ mb: 2, fontWeight: "bold", color: "#18b5a7" }}
       >
-        🥗 Daily Macro Rings
+        🥗 Today's Macro Rings
       </Typography>
 
       <Grid container spacing={2} justifyContent="center">

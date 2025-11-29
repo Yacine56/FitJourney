@@ -8,7 +8,7 @@ export default function CoachSuggestion() {
   const [visible, setVisible] = useState(false);
 
   async function fetchSuggestion() {
-    const res = await fetch("/api/dashboard/ai-suggestion", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/dashboard/ai-suggestion`, {
   credentials: "include",
 });
 

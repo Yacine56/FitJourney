@@ -37,7 +37,7 @@ export default function Profile() {
     (async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:5000/api/auth/me", { credentials: "include" });
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, { credentials: "include" });
         if (!res.ok) throw new Error("Not authenticated");
         const data = await res.json();
         setUser?.(data.user);
@@ -85,7 +85,7 @@ export default function Profile() {
 
     try {
       setSaving(true);
-      const res = await fetch("http://localhost:5000/api/auth/me", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -134,7 +134,7 @@ export default function Profile() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/change-password", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/change-password`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

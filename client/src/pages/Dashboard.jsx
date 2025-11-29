@@ -1,13 +1,14 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import { Box, Grid, Typography, Paper } from "@mui/material";
+import { Box, Grid, Paper } from "@mui/material";
+
 import WeightTracker from "../components/Dashboard/WeightTracker";
 import CaloriesChart from "../components/Dashboard/CaloriesChart";
 import MealList from "../components/meals/MealList";
 import WorkoutList from "../components/workout/WorkoutList";
 import MacroRings from "../components/Dashboard/MacroRings";
 import CoachSuggestion from "../components/Dashboard/CoachSuggestion";
- 
+
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "rgba(255,255,255,0.9)",
   padding: theme.spacing(3),
@@ -27,16 +28,26 @@ export default function Dashboard() {
       sx={{
         minHeight: "100vh",
         width: "100%",
-        py: { xs: 3, md: 6 },
-        px: { xs: 2, sm: 4, md: 8 },
+        py: { xs: 2, md: 4 },
+        px: { xs: 2, sm: 3, md: 6 },
+
         display: "flex",
-        justifyContent: "space-between",
+        flexDirection: { xs: "column", xl: "row" },
+        gap: { xs: 3, xl: 4 },
         alignItems: "flex-start",
-        gap: 3,
+        justifyContent: "center",
       }}
     >
-      {/* ✅ Left side (Main) */}
-      <Box sx={{ flexGrow: 1, maxWidth: "1400px" }}>
+
+      {/* ✅ Main Content */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          width: "100%",
+          maxWidth: "1100px",
+          mx: "auto",
+        }}
+      >
         <Grid
           container
           rowSpacing={4}
@@ -62,11 +73,11 @@ export default function Dashboard() {
         </Grid>
       </Box>
 
-      {/* ✅ Right Sticky Macro Rings */}
+      {/* ✅ Sidebar (Macro Rings) — only sticky on XL screens */}
       <Box
         sx={{
-          width: { xs: "100%", lg: "360px" }, // full width on mobile, sidebar on desktop
-          position: { xs: "static", lg: "sticky" },
+          width: { xs: "100%", xl: "360px" },
+          position: { xs: "static", xl: "sticky" },
           top: 20,
           flexShrink: 0,
         }}
@@ -74,11 +85,10 @@ export default function Dashboard() {
         <Item>
           <MacroRings />
         </Item>
-        
-          <CoachSuggestion />
-       
+
+        {/* AI Coach bubble here in future */}
+         <CoachSuggestion /> 
       </Box>
-      
     </Box>
   );
 }

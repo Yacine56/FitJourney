@@ -32,7 +32,7 @@ export default function Workout() {
 
   async function handleDelete(id) {
     try {
-      const res = await fetch(`http://localhost:5000/api/workouts/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/workouts/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

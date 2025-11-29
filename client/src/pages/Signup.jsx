@@ -13,7 +13,7 @@ export default function Signup() {
   async function submit(e) {
     e.preventDefault();
     setError("");
-    const res = await fetch("http://localhost:5000/api/auth/register", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

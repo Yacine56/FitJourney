@@ -8,14 +8,14 @@ export function AuthProvider({ children }) {
 
   // Check session on first load (cookie-based)
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/me", { credentials: "include" })
+    fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, { credentials: "include" })
       .then(r => (r.ok ? r.json() : null))
       .then(d => setUser(d?.user ?? null))
       .finally(() => setLoading(false));
   }, []);
 
   async function logout() {
-    await fetch("http://localhost:5000/api/auth/logout", {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
       method: "POST",
       credentials: "include",
     });

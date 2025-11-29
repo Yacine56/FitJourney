@@ -20,7 +20,7 @@ const MealList = forwardRef(({ onDelete }, ref) => {
   const [deleteId, setDeleteId] = useState(null);
 
   async function fetchMeals(date = selectedDate) {
-    const res = await fetch(`http://localhost:5000/api/meals?date=${date}`, { credentials: "include" });
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/meals?date=${date}`, { credentials: "include" });
     const data = await res.json();
     setMeals(data.items || []);
   }

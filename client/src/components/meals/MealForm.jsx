@@ -23,7 +23,7 @@ export default function MealForm({ selected = null, onSave }) {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/meals", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/meals`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

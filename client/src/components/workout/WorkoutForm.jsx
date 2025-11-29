@@ -66,7 +66,7 @@ export default function WorkoutForm({ selected, onSave }) {
 
     try {
       setSaving(true);
-      const res = await fetch("http://localhost:5000/api/workouts", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/workouts`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

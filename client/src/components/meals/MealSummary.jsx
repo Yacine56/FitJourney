@@ -15,7 +15,7 @@ export default function MealSummary({ refreshKey }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const userRes = await fetch("http://localhost:5000/api/auth/me", {
+        const userRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
           credentials: "include",
         });
         const userData = await userRes.json();
@@ -23,7 +23,7 @@ export default function MealSummary({ refreshKey }) {
         setGoal(calorieGoal);
 
         const today = getLocalDate();
-        const res = await fetch(`http://localhost:5000/api/meals?date=${today}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/meals?date=${today}`, {
           credentials: "include",
         });
         const data = await res.json();

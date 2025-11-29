@@ -29,7 +29,7 @@ export default function WeightTracker() {
 
   // Fetch logged weights
   async function fetchWeights() {
-    const res = await fetch("http://localhost:5000/api/weight", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/weight`, {
       credentials: "include",
     });
     const result = await res.json();
@@ -49,7 +49,7 @@ export default function WeightTracker() {
   // Log new weight
   async function handleLogWeight() {
     if (!weight) return;
-    const res = await fetch("http://localhost:5000/api/weight", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/weight`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
