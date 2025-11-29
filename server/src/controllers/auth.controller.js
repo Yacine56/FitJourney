@@ -1,3 +1,4 @@
+//auth.controller.js
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { signToken } from "../utils/jwt.js";
@@ -9,18 +10,25 @@ const PUBLIC =
 function setCookie(res, token) {
   const isProduction = process.env.NODE_ENV === "production";
 
-  // Local dev (localhost frontend)
-  const isLocal =
-    process.env.CLIENT_ORIGIN?.includes("localhost") ||
-    !isProduction;
+  if (isProduction) {
+    // Render backend (HTTPS), cross-site from your frontend
+    return res.cookie(process.env.COOKIE_NAME, token, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+  }
 
-  res.cookie(process.env.COOKIE_NAME, token, {
+  // Local backend localhost:5000
+  return res.cookie(process.env.COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: isLocal ? "lax" : "none", // localhost = lax / production = none
-    secure: !isLocal,                   // localhost = false / production = true
+    sameSite: "lax",
+    secure: false,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 }
+
 
 // POST /api/auth/register
 export async function register(req, res) {
