@@ -75,7 +75,7 @@ export default function WeightTracker() {
         backdropFilter: "blur(6px)",
         boxShadow: 0,
         mb: 4,
-        backgroundColor: "transparent"
+        //backgroundColor: "transparent"
         
       }}
     >

@@ -23,7 +23,7 @@ const app = express();
  */
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.CLIENT_ORIGIN, // e.g. https://fitjourney.vercel.app
+  "https://fit-journey-lemon.vercel.app", // e.g. https://fitjourney.vercel.app
 ].filter(Boolean);
 
 app.use(
