@@ -1,18 +1,13 @@
-// frontend/components/Dashboard/CoachSuggestion.jsx
-
+// src/components/Dashboard/CoachSuggestion.jsx
 import { useEffect, useState } from "react";
-import { Box, Paper, Typography, IconButton, CircularProgress } from "@mui/material";
+import { Box, Paper, Typography, IconButton, Avatar } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
 
 export default function CoachSuggestion() {
-  const [text, setText] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [available, setAvailable] = useState(true);
+  const [text, setText] = useState("Loading your daily tip...");
+  const [visible, setVisible] = useState(false);
 
   async function fetchSuggestion() {
-    setLoading(true);
-
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/dashboard/ai-suggestion`,
@@ -20,21 +15,11 @@ export default function CoachSuggestion() {
       );
 
       const data = await res.json();
-
-      // If AI returned null → hide component
-      if (!data.suggestion) {
-        setAvailable(false);
-        return;
-      }
-
-      setText(data.suggestion);
-      setAvailable(true);
-
-    } catch (err) {
-      console.error("AI coach error:", err);
-      setAvailable(false);
-    } finally {
-      setLoading(false);
+      setText(data.suggestion || "Stay consistent — you're doing great!");
+      setVisible(true);
+    } catch {
+      setText("Keep tracking meals — you're doing great! 💪");
+      setVisible(true);
     }
   }
 
@@ -42,46 +27,59 @@ export default function CoachSuggestion() {
     fetchSuggestion();
   }, []);
 
-  // Hide card entirely when AI is unavailable
-  if (!available) return null;
-
   return (
-    <Paper
+    <Box
       sx={{
-        mt: 2,
-        p: 2,
-        borderRadius: 3,
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 1.5,
+        position: "fixed",
+        right: { xs: 12, sm: 20, md: 24 },
+        top: { xs: 70, sm: 24 },          // a bit lower on mobile so it doesn’t hit navbar
+        zIndex: 2000,
+        maxWidth: 300,
+        animation: visible ? "fadeIn 0.4s ease-out" : "none",
+        "@keyframes fadeIn": {
+          from: { opacity: 0, transform: "translateY(-10px)" },
+          to: { opacity: 1, transform: "translateY(0)" },
+        },
       }}
     >
-      <SmartToyIcon sx={{ fontSize: 36, color: "#00bcd4", mt: 0.5 }} />
+      <Paper
+        elevation={4}
+        sx={{
+          p: 2,
+          borderRadius: 3,
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 2,
+          backgroundColor: "rgba(255,255,255,0.94)",
+          backdropFilter: "blur(6px)",
+        }}
+      >
+        {/* Coach avatar instead of robot */}
+        <Avatar
+          sx={{
+            width: 48,
+            height: 48,
+            bgcolor: "#1cb5e0",
+            fontSize: 24,
+            fontWeight: "bold",
+          }}
+        >
+          💪
+        </Avatar>
 
-      <Box sx={{ flex: 1 }}>
-        <Typography variant="subtitle2" fontWeight="bold">
-          Coach’s Tip
-        </Typography>
-
-        {loading ? (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
-            <CircularProgress size={16} />
-            <Typography variant="body2">Analyzing today’s meals…</Typography>
-          </Box>
-        ) : (
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="subtitle1" fontWeight="bold">
+            Daily Coach Tip
+          </Typography>
           <Typography variant="body2" sx={{ mt: 0.5 }}>
             {text}
           </Typography>
-        )}
-      </Box>
+        </Box>
 
-      <IconButton
-        onClick={fetchSuggestion}
-        size="small"
-        sx={{ alignSelf: "flex-start" }}
-      >
-        <RefreshIcon fontSize="small" />
-      </IconButton>
-    </Paper>
+        <IconButton size="small" onClick={fetchSuggestion}>
+          <RefreshIcon fontSize="small" />
+        </IconButton>
+      </Paper>
+    </Box>
   );
 }
