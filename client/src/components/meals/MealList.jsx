@@ -19,11 +19,16 @@ const MealList = forwardRef(({ onDelete }, ref) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
-  async function fetchMeals(date = selectedDate) {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/meals?date=${date}`, { credentials: "include" });
-    const data = await res.json();
-    setMeals(data.items || []);
-  }
+async function fetchMeals(date = selectedDate) {
+  const tzOffset = new Date().getTimezoneOffset(); // e.g. 360 for UTC-6
+
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/meals?date=${date}&tzOffset=${tzOffset}`,
+    { credentials: "include" }
+  );
+  const data = await res.json();
+  setMeals(data.items || []);
+}
 
   useImperativeHandle(ref, () => ({ fetchMeals }));
 
@@ -36,11 +41,14 @@ const MealList = forwardRef(({ onDelete }, ref) => {
     setConfirmOpen(true);
   }
 
-  function handleConfirmDelete() {
-    if (deleteId) onDelete(deleteId);
-    setConfirmOpen(false);
-    setDeleteId(null);
+function handleConfirmDelete() {
+  if (deleteId && typeof onDelete === "function") {
+    onDelete(deleteId);
   }
+  setConfirmOpen(false);
+  setDeleteId(null);
+}
+
 
   return (
     <Box>

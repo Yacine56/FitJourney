@@ -29,18 +29,35 @@ export async function createMeal(req, res) {
 }
 
 /** GET /api/meals?date=YYYY-MM-DD */
+// GET /api/meals?date=YYYY-MM-DD&tzOffset=minutes
 export async function getMeals(req, res) {
   try {
     const filter = { user: req.userId };
-    if (req.query.date) {
-      const [y, m, d] = req.query.date.split("-").map(Number);
-      const start = new Date(y, m - 1, d, 0, 0, 0);
-      const end = new Date(y, m - 1, d, 23, 59, 59, 999);
-      filter.createdAt = { $gte: start, $lt: end };
+    const { date, tzOffset } = req.query;
+
+    if (date) {
+      const [y, m, d] = date.split("-").map(Number);
+
+      // timezone offset in minutes from client (e.g. 360 for UTC-6)
+      const offsetMin = Number(tzOffset ?? 0);
+
+      // "Local" midnight of that date in UTC ms
+      const utcMidnight = Date.UTC(y, m - 1, d, 0, 0, 0, 0);
+
+      // Convert local [00:00, next-day 00:00) to UTC range
+      const startMs = utcMidnight - offsetMin * 60 * 1000;
+      const endMs   = startMs + 24 * 60 * 60 * 1000;
+
+      filter.createdAt = {
+        $gte: new Date(startMs),
+        $lt:  new Date(endMs),
+      };
     }
-    const meals = await Meal.find(filter).sort({ createdAt: -1 });
+
+    const meals = await Meal.find(filter).sort({ createdAt: 1 });
     res.json({ items: meals });
   } catch (e) {
+    console.error("Failed to fetch meals:", e);
     res.status(500).json({ error: "Failed to fetch meals." });
   }
 }

@@ -26,18 +26,21 @@ const WorkoutList = forwardRef(({ onDelete, onEdit }, ref) => {
   const [selectedDate, setSelectedDate] = useState(getLocalDateString()); // ✅ fixed local date
 
   // 🔹 Function to fetch workouts (exposed to parent)
-  async function fetchWorkouts(date = selectedDate) {
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/workouts?date=${date}`,
-        { credentials: "include" }
-      );
-      const data = await res.json();
-      setWorkouts(data.items || []);
-    } catch (err) {
-      console.error("Failed to fetch workouts:", err);
-    }
+async function fetchWorkouts(date = selectedDate) {
+  try {
+    const tzOffset = new Date().getTimezoneOffset(); // minutes, e.g. 360
+
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/workouts?date=${date}&tzOffset=${tzOffset}`,
+      { credentials: "include" }
+    );
+    const data = await res.json();
+    setWorkouts(data.items || []);
+  } catch (err) {
+    console.error("Failed to fetch workouts:", err);
   }
+}
+
 
   // Expose fetchWorkouts to parent via ref
   useImperativeHandle(ref, () => ({
