@@ -212,6 +212,7 @@ export default function Profile() {
                 value={form.weight}
                 onChange={(e) => updateField("weight", e.target.value)}
                 required
+                disabled
               />
             </Grid>
 
@@ -306,111 +307,3 @@ export default function Profile() {
   );
 }
 
-// import { TextField } from "@mui/material";
-// import { useEffect, useState } from "react";
-
-
-// export default function Profile() {
-//     const [user,setUser]=useState(null);
-//     const[Loading,setLoading]=useState(false);
-//     const [form,setForm]=useState({
-//         fullName:"bla",
-//         age:"12",
-//         height:"23",
-//         weight:"32",
-//         dailyCalorieGoal:"232",
-//         targetWeight:"32"
-       
-//     });
-//     const [passwordForm,setPasswordForm]=useState({
-//         currentPassword:"",
-//         newPassword:"",
-//         confirmNewPassword:""
-//     });
-//     const [passwordError,setPasswordError]=useState("");
-//     const [pwdOpen,setPwdOpen]=useState(false);
-
-//    useEffect(() => {
-//     setLoading(true);
-//     fetch("http://localhost:5000/api/auth/me",{credentials:"include"}).then((res)=>res.json()).then((data)=>{
-//       setUser(data.user);
-//       setLoading(false);
-//     }).catch((err)=>{
-//       console.error("Error fetching user data:", err);
-//       setLoading(false);
-//     });
-//     }, []);
-//     if (Loading) return <div>Loading...</div>;
-    
-//     const handleSave=(e)=>{
-//         e.preventDefault();
-
-//         const payload = {
-//           fullname:form.fullName,
-//         age: Number(form.age),
-//       height: Number(form.height),
-//     weight:Number(form.weight),
-//     dailyCalorieGoal:Number(form.dailyCalorieGoal),
-//     targetWeight:Number(form.targetWeight),} ;
-//     fetch("http://localhost:5000/api/auth/me",{ method:"PATCH", 
-//       credentials:"include",
-//       headers:{"Content-Type":"application/json"},
-//      body:JSON.stringify(payload)}).then((res)=>res.json()).then((data)=>{
-//       setUser(data.user);
-//      }).catch((err)=>{
-//       console.error("Error updating profile:",err);
-//      });
-//     }
-
-//     const handlePasswordChange = async (e) => {
-//   e.preventDefault();
-//   setPwdError("");
-
-//   const { currentPassword, newPassword, confirmNewPassword } = pwdForm;
-
-//   if (!currentPassword || !newPassword || !confirmNewPassword) {
-//     setPwdError("All fields are required.");
-//     return;
-//   }
-//   if (newPassword !== confirmNewPassword) {
-//     setPwdError("New passwords do not match.");
-//     return;
-//   }
-//   if (newPassword.length < 8) {
-//     setPwdError("New password must be at least 8 characters.");
-//     return;
-//   }
-
-//   try {
-//     const res = await fetch("http://localhost:5000/api/auth/change-password", {
-//       method: "POST",
-//       credentials: "include",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ currentPassword, newPassword }),
-//     });
-
-//     const data = await res.json().catch(() => ({}));
-//     if (!res.ok) {
-//       throw new Error(data.error || "Failed to change password");
-//     }
-
-//     setPwdForm({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
-//     setPwdOpen(false);
-//   } catch (err) {
-//     setPwdError(err.message);
-//   }
-// };
-
-//   return (
-//     <div>
-//      <form onSubmit={handleSave}>
-//         <TextField label="Full Name" onChange={(e)=>setForm({...form,fullName:e.target.value})}  value={form.fullName} required/>
-//         <TextField label="Age" onChange={(e)=>setForm({...form,age:e.target.value})}  value={form.age} required/>
-//         <TextField label="Height" onChange={(e)=>setForm({...form,height:e.target.value})}  value={form.height} required/>
-//         <TextField label="Weight" onChange={(e)=>setForm({...form,weight:e.target.value})}  value={form.weight} required/>
-//         <TextField label="Daily Calorie Goal" onChange={(e)=>setForm({...form,dailyCalorieGoal:e.target.value})}  value={form.dailyCalorieGoal} required/>
-//         <TextField label="Target Weight" onChange={(e)=>setForm({...form,targetWeight:e.target.value})}  value={form.targetWeight} required/>
-//      </form>
-//     </div>
-//   );
-// }

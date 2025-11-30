@@ -1,4 +1,5 @@
 import WeightProgress from "../models/WeightProgress.js";
+import User from "../models/User.js";
 
 /** Helper: Get local midnight (fix timezone issues) */
 function getLocalMidnight() {
@@ -17,11 +18,15 @@ export async function createWeight(req, res) {
 
     const today = getLocalMidnight();
 
+    // 1) Create or update today's weight entry
     const entry = await WeightProgress.findOneAndUpdate(
       { user: req.userId, date: today },
       { weight },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
+
+    // 2) Sync Profile Weight with the latest logged weight
+    await User.findByIdAndUpdate(req.userId, { weight });
 
     res.status(201).json({ entry });
   } catch (e) {
