@@ -1,3 +1,4 @@
+// controllers/dashboard.controller.js
 import mongoose from "mongoose";
 import Meal from "../models/Meal.js";
 import Workout from "../models/Workout.js";
@@ -9,7 +10,9 @@ export async function getDashboardData(req, res) {
   try {
     const userId = req.userId;
     if (!userId) {
-      return res.status(401).json({ error: "Unauthorized: missing user ID" });
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing user ID" });
     }
 
     const userObjectId = new mongoose.Types.ObjectId(userId);
@@ -92,7 +95,7 @@ export async function getDashboardData(req, res) {
       { calories: 0, protein: 0, carbs: 0, fats: 0 }
     );
 
-    // 🔹 5) Macro targets (lbs only — correct version)
+    // 🔹 5) Macro targets (lbs only — same logic you already used)
     const user = await User.findById(userId).select("weight targetWeight");
 
     const curLbs = user?.weight ?? 170; // stored in lbs
@@ -126,12 +129,14 @@ export async function getDashboardData(req, res) {
     });
   } catch (err) {
     console.error("Dashboard fetch error:", err);
-    res.status(500).json({ error: "Failed to load dashboard data" });
+    res
+      .status(500)
+      .json({ error: "Failed to load dashboard data" });
   }
 }
 
 // ------------------------------------------------------------------
-//                     AI COACH SUGGESTION
+//                  AI COACH SUGGESTION (uses macros)
 // ------------------------------------------------------------------
 export async function getAISuggestions(req, res) {
   try {
@@ -139,11 +144,11 @@ export async function getAISuggestions(req, res) {
 
     const user = await User.findById(userId).select("weight targetWeight");
     if (!user) {
-      // no user profile → no suggestion; frontend will hide the card
+      // no profile yet → just skip AI
       return res.json({ suggestion: null });
     }
 
-    // Today totals (same style as above)
+    // Today totals (same logic as dashboard)
     const today = new Date();
     const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const end = new Date(
@@ -170,7 +175,7 @@ export async function getAISuggestions(req, res) {
       { calories: 0, protein: 0, carbs: 0, fats: 0 }
     );
 
-    // Compute targets using SAME logic as dashboard (lbs already)
+    // Targets = same as macroTargets logic above
     const curLbs = user.weight;
     const tgtLbs = user.targetWeight ?? curLbs;
     const calPerLb = tgtLbs > curLbs ? 15 : tgtLbs < curLbs ? 12 : 14;
@@ -202,14 +207,18 @@ export async function getAISuggestions(req, res) {
     const tips = await coachSuggest({ user, totals, targets, remaining });
 
     if (!tips || tips.length === 0) {
-      // AI unavailable or failed → let frontend hide the card
-      return res.json({ suggestion: null });
+      // If AI fails, send a generic tip (frontend still shows coach)
+      return res.json({
+        suggestion: "Stay consistent — you’re doing great! 💪",
+      });
     }
 
     return res.json({ suggestion: tips[0] });
   } catch (err) {
     console.error("AI suggestion error:", err.message);
-    // On error, also return null so frontend hides the card
-    return res.json({ suggestion: null });
+    // On error, still send a safe generic tip
+    return res.json({
+      suggestion: "AI coach is offline, but your progress still counts 💪",
+    });
   }
 }
