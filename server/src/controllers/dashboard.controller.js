@@ -49,15 +49,33 @@ export async function getDashboardData(req, res) {
         user: userId,
         createdAt: {
           $gte: new Date(formattedDate),
-          $lt: new Date(new Date(formattedDate).setDate(new Date(formattedDate).getDate() + 1)),
+          $lt: new Date(
+            new Date(formattedDate).setDate(
+              new Date(formattedDate).getDate() + 1
+            )
+          ),
         },
       }).select("name sets reps weight notes");
     }
 
     // 🔹 4) Today's macros intake
     const today = new Date();
-    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
-    const end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+    const start = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0
+    );
+    const end = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59
+    );
 
     const todaysMeals = await Meal.find({
       user: userId,
@@ -77,7 +95,7 @@ export async function getDashboardData(req, res) {
     // 🔹 5) Macro targets (lbs only — correct version)
     const user = await User.findById(userId).select("weight targetWeight");
 
-    const curLbs = user?.weight ?? 170;     // stored in lbs
+    const curLbs = user?.weight ?? 170; // stored in lbs
     const tgtLbs = user?.targetWeight ?? curLbs;
 
     const calPerLb = tgtLbs > curLbs ? 15 : tgtLbs < curLbs ? 12 : 14;
@@ -87,7 +105,9 @@ export async function getDashboardData(req, res) {
     const fatGoal = Math.round((caloriesGoal * 0.25) / 9);
     const carbsGoal = Math.max(
       0,
-      Math.round((caloriesGoal - (proteinGoal * 4 + fatGoal * 9)) / 4)
+      Math.round(
+        (caloriesGoal - (proteinGoal * 4 + fatGoal * 9)) / 4
+      )
     );
 
     const macroTargets = {
@@ -104,23 +124,36 @@ export async function getDashboardData(req, res) {
       todaysMacros,
       macroTargets,
     });
-
   } catch (err) {
     console.error("Dashboard fetch error:", err);
     res.status(500).json({ error: "Failed to load dashboard data" });
   }
 }
+
+// ------------------------------------------------------------------
+//                     AI COACH SUGGESTION
+// ------------------------------------------------------------------
 export async function getAISuggestions(req, res) {
   try {
     const userId = req.userId;
 
     const user = await User.findById(userId).select("weight targetWeight");
-    if (!user) return res.status(400).json({ suggestion: "Welcome! Track meals to see tips." });
+    if (!user) {
+      // no user profile → no suggestion; frontend will hide the card
+      return res.json({ suggestion: null });
+    }
 
-    // Today totals
+    // Today totals (same style as above)
     const today = new Date();
     const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+    const end = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59
+    );
 
     const meals = await Meal.find({
       user: userId,
@@ -129,29 +162,35 @@ export async function getAISuggestions(req, res) {
 
     const totals = meals.reduce(
       (a, m) => ({
-        calories: a.calories + m.calories,
-        protein: a.protein + m.protein,
-        carbs: a.carbs + m.carbs,
-        fats: a.fats + m.fats,
+        calories: a.calories + (m.calories || 0),
+        protein: a.protein + (m.protein || 0),
+        carbs: a.carbs + (m.carbs || 0),
+        fats: a.fats + (m.fats || 0),
       }),
       { calories: 0, protein: 0, carbs: 0, fats: 0 }
     );
 
-    // Compute targets same as dashboard
-    const lbs = user.weight * 2.20462;
-    const calPerLb = user.targetWeight > user.weight ? 15 : user.targetWeight < user.weight ? 12 : 14;
+    // Compute targets using SAME logic as dashboard (lbs already)
+    const curLbs = user.weight;
+    const tgtLbs = user.targetWeight ?? curLbs;
+    const calPerLb = tgtLbs > curLbs ? 15 : tgtLbs < curLbs ? 12 : 14;
 
-    const targets = {
-      calories: Math.round(lbs * calPerLb),
-      protein: Math.round(lbs),
-      fats: Math.round((lbs * calPerLb * 0.25) / 9),
-    };
-    targets.carbs = Math.max(
+    const caloriesGoal = Math.round(curLbs * calPerLb);
+    const proteinGoal = Math.round(curLbs);
+    const fatGoal = Math.round((caloriesGoal * 0.25) / 9);
+    const carbsGoal = Math.max(
       0,
       Math.round(
-        (targets.calories - (targets.protein * 4 + targets.fats * 9)) / 4
+        (caloriesGoal - (proteinGoal * 4 + fatGoal * 9)) / 4
       )
     );
+
+    const targets = {
+      calories: Math.min(Math.max(caloriesGoal, 1200), 4500),
+      protein: Math.min(Math.max(proteinGoal, 80), 300),
+      carbs: Math.min(Math.max(carbsGoal, 50), 600),
+      fats: Math.min(Math.max(fatGoal, 30), 150),
+    };
 
     const remaining = {
       calories: Math.max(0, targets.calories - totals.calories),
@@ -162,10 +201,15 @@ export async function getAISuggestions(req, res) {
 
     const tips = await coachSuggest({ user, totals, targets, remaining });
 
-    res.json({ suggestion: tips[0] || "Keep pushing!" });
+    if (!tips || tips.length === 0) {
+      // AI unavailable or failed → let frontend hide the card
+      return res.json({ suggestion: null });
+    }
 
+    return res.json({ suggestion: tips[0] });
   } catch (err) {
     console.error("AI suggestion error:", err.message);
-    res.json({ suggestion: "Stay consistent — you're doing great!" });
+    // On error, also return null so frontend hides the card
+    return res.json({ suggestion: null });
   }
 }
