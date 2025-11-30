@@ -28,8 +28,7 @@ const WorkoutList = forwardRef(({ onDelete, onEdit }, ref) => {
   // 🔹 Function to fetch workouts (exposed to parent)
 async function fetchWorkouts(date = selectedDate) {
   try {
-    const tzOffset = new Date().getTimezoneOffset(); // minutes, e.g. 360
-
+    const tzOffset = new Date().getTimezoneOffset();
     const res = await fetch(
       `${import.meta.env.VITE_API_URL}/api/workouts?date=${date}&tzOffset=${tzOffset}`,
       { credentials: "include" }
@@ -40,6 +39,7 @@ async function fetchWorkouts(date = selectedDate) {
     console.error("Failed to fetch workouts:", err);
   }
 }
+
 
 
   // Expose fetchWorkouts to parent via ref

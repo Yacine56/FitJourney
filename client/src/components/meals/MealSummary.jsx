@@ -15,30 +15,43 @@ export default function MealSummary({ refreshKey }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const userRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
-          credentials: "include",
-        });
-        const userData = await userRes.json();
-        const calorieGoal = userData.user?.dailyCalorieGoal || 2000;
+        // 🔹 1) Get the SAME macroTargets the dashboard uses
+        const dashRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/dashboard`,
+          { credentials: "include" }
+        );
+        const dashData = await dashRes.json();
+        const calorieGoal = dashData.macroTargets?.calories || 2000;
         setGoal(calorieGoal);
 
+        // 🔹 2) Get today's meals (with timezone offset)
         const today = getLocalDate();
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/meals?date=${today}`, {
-          credentials: "include",
-        });
+        const tzOffset = new Date().getTimezoneOffset(); // e.g. 360 for UTC-6
+
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/meals?date=${today}&tzOffset=${tzOffset}`,
+          { credentials: "include" }
+        );
         const data = await res.json();
 
-        const total = (data.items || []).reduce((sum, m) => sum + m.calories, 0);
+        const total = (data.items || []).reduce(
+          (sum, m) => sum + (m.calories || 0),
+          0
+        );
         setTotalCalories(total);
 
-        const calcPercent = Math.min(100, Math.round((total / calorieGoal) * 100));
+        const calcPercent = Math.min(
+          100,
+          Math.round((total / calorieGoal) * 100)
+        );
         setPercent(calcPercent);
       } catch (err) {
         console.error("Failed to load summary:", err);
       }
     }
+
     fetchData();
-  }, [refreshKey]); // 🔹 updates whenever refreshKey changes
+  }, [refreshKey]);
 
   return (
     <Box sx={{ textAlign: "center" }}>

@@ -50,7 +50,7 @@ const system = [
   "3) ALWAYS keep numbers and food units (e.g., '250g', '2', '1 cup').",
   "4) If user gives quantity, keep EXACT amount.",
   "5) If no amount given:",
-  "   - Whole fruits default = 1 piece",
+  "   - Whole fruits default = 1 Whole",
   "   - Cooked foods default = 100 g or 1 cup",
   "6) If user gives fruit count (e.g., '3 bananas'):",
   "   quantity MUST equal fruit count",

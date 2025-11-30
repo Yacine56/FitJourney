@@ -20,7 +20,7 @@ const MealList = forwardRef(({ onDelete }, ref) => {
   const [deleteId, setDeleteId] = useState(null);
 
 async function fetchMeals(date = selectedDate) {
-  const tzOffset = new Date().getTimezoneOffset(); // e.g. 360 for UTC-6
+  const tzOffset = new Date().getTimezoneOffset(); // e.g. 300
 
   const res = await fetch(
     `${import.meta.env.VITE_API_URL}/api/meals?date=${date}&tzOffset=${tzOffset}`,
@@ -29,6 +29,7 @@ async function fetchMeals(date = selectedDate) {
   const data = await res.json();
   setMeals(data.items || []);
 }
+
 
   useImperativeHandle(ref, () => ({ fetchMeals }));
 

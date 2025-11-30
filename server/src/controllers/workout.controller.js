@@ -62,30 +62,26 @@ export async function getWorkouts(req, res) {
     const { date, tzOffset } = req.query;
 
     if (date) {
-      const [year, month, day] = date.split("-").map(Number);
+      const [y, m, d] = date.split("-").map(Number);
+      const offsetMin = Number(tzOffset ?? 0);
 
-      const offsetMin = Number(tzOffset ?? 0); // e.g. 360 for UTC-6
+      const baseStart = Date.UTC(y, m - 1, d, 0, 0, 0, 0);
+      const baseEnd   = Date.UTC(y, m - 1, d + 1, 0, 0, 0, 0);
 
-      // Local midnight in UTC ms
-      const utcMidnight = Date.UTC(year, month - 1, day, 0, 0, 0, 0);
+      const start = new Date(baseStart + offsetMin * 60 * 1000);
+      const end   = new Date(baseEnd   + offsetMin * 60 * 1000);
 
-      // Convert local [00:00, next-day 00:00) to UTC range
-      const startMs = utcMidnight - offsetMin * 60 * 1000;
-      const endMs   = startMs + 24 * 60 * 60 * 1000;
-
-      filter.createdAt = {
-        $gte: new Date(startMs),
-        $lt:  new Date(endMs),
-      };
+      filter.createdAt = { $gte: start, $lt: end };
     }
 
     const workouts = await Workout.find(filter).sort({ createdAt: 1 });
     res.json({ items: workouts });
   } catch (e) {
-    console.error("Failed to fetch workouts:", e);
+    console.error("getWorkouts error:", e);
     res.status(500).json({ error: "Failed to fetch workouts." });
   }
 }
+
 
 
 

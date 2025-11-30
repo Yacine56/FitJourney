@@ -30,6 +30,7 @@ export async function createMeal(req, res) {
 
 /** GET /api/meals?date=YYYY-MM-DD */
 // GET /api/meals?date=YYYY-MM-DD&tzOffset=minutes
+// GET /api/meals?date=YYYY-MM-DD&tzOffset=minutes
 export async function getMeals(req, res) {
   try {
     const filter = { user: req.userId };
@@ -37,27 +38,23 @@ export async function getMeals(req, res) {
 
     if (date) {
       const [y, m, d] = date.split("-").map(Number);
+      const offsetMin = Number(tzOffset ?? 0); // e.g. 300 for UTC-5
 
-      // timezone offset in minutes from client (e.g. 360 for UTC-6)
-      const offsetMin = Number(tzOffset ?? 0);
+      // base UTC midnights
+      const baseStart = Date.UTC(y, m - 1, d, 0, 0, 0, 0);
+      const baseEnd   = Date.UTC(y, m - 1, d + 1, 0, 0, 0, 0);
 
-      // "Local" midnight of that date in UTC ms
-      const utcMidnight = Date.UTC(y, m - 1, d, 0, 0, 0, 0);
+      // convert local [00:00, next-day 00:00) to UTC
+      const start = new Date(baseStart + offsetMin * 60 * 1000);
+      const end   = new Date(baseEnd   + offsetMin * 60 * 1000);
 
-      // Convert local [00:00, next-day 00:00) to UTC range
-      const startMs = utcMidnight - offsetMin * 60 * 1000;
-      const endMs   = startMs + 24 * 60 * 60 * 1000;
-
-      filter.createdAt = {
-        $gte: new Date(startMs),
-        $lt:  new Date(endMs),
-      };
+      filter.createdAt = { $gte: start, $lt: end };
     }
 
     const meals = await Meal.find(filter).sort({ createdAt: 1 });
     res.json({ items: meals });
   } catch (e) {
-    console.error("Failed to fetch meals:", e);
+    console.error("getMeals error:", e);
     res.status(500).json({ error: "Failed to fetch meals." });
   }
 }
