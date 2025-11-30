@@ -91,9 +91,9 @@ export default function Signup() {
           {field("fullName", "Full Name")}
           {field("age", "Age", { type: "number" })}
           {field("height", "Height (cm)", { type: "number" })}
-          {field("weight", "Weight (kg)", { type: "number" })}
+          {field("weight", "Weight (lb)", { type: "number" })}
           {field("dailyCalorieGoal", "Daily Calorie Goal", { type: "number" })}
-          {field("targetWeight", "Target Weight (kg)", { type: "number" })}
+          {field("targetWeight", "Target Weight (lb)", { type: "number" })}
 
           {error && (
             <Typography color="error" variant="body2">
