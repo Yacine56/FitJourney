@@ -16,6 +16,8 @@ import {
   Box,
   Tooltip,
   Fade,
+  CircularProgress,
+  LinearProgress,
 } from "@mui/material";
 
 export default function MealSearch({ onLog, onAddCustom }) {
@@ -23,26 +25,41 @@ export default function MealSearch({ onLog, onAddCustom }) {
   const [results, setResults] = useState([]);
   const [userParts, setUserParts] = useState([]);
   const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function handleSearch(e) {
     e.preventDefault();
-    setResults([]);
+    const trimmed = query.trim();
+    if (!trimmed) return;
 
-    const parts = query.split(/\band\b/i).map((s) => s.trim());
+    setResults([]);
+    setNotFound(false);
+    setLoading(true);
+
+    const parts = trimmed.split(/\band\b/i).map((s) => s.trim());
     setUserParts(parts);
 
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/meals/search?query=${query}`,
-      { credentials: "include" }
-    );
-    const data = await res.json();
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/meals/search?query=${encodeURIComponent(
+          trimmed
+        )}`,
+        { credentials: "include" }
+      );
+      const data = await res.json();
 
-    if (data.results?.length > 0) {
-      setResults(data.results);
-      setQuery(""); // ✅ auto-clear input
-    } else {
-      setResults([]);
+      if (data.results?.length > 0) {
+        setResults(data.results);
+        setQuery(""); // auto-clear on success
+      } else {
+        setResults([]);
+        setNotFound(true);
+      }
+    } catch (err) {
+      console.error("Meal search failed:", err);
       setNotFound(true);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -82,8 +99,16 @@ export default function MealSearch({ onLog, onAddCustom }) {
             type="submit"
             variant="contained"
             sx={{ bgcolor: "#18b5a7", px: 3 }}
+            disabled={loading}
           >
-            SEARCH
+            {loading ? (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <CircularProgress size={18} sx={{ color: "white" }} />
+                <span>Searching…</span>
+              </Box>
+            ) : (
+              "SEARCH"
+            )}
           </Button>
         </form>
 
@@ -98,6 +123,13 @@ export default function MealSearch({ onLog, onAddCustom }) {
         </Tooltip>
       </Box>
 
+      {/* Loading bar under search */}
+      {loading && (
+        <LinearProgress
+          sx={{ mt: 1, mb: 1 }}
+        />
+      )}
+
       {/* Note */}
       <Typography
         variant="caption"
@@ -107,83 +139,97 @@ export default function MealSearch({ onLog, onAddCustom }) {
         Default serving: 100 g or 1 cup (you can specify amounts like “250 g rice”
         or “2 bananas”).
       </Typography>
-{/* Results */}
-<Grid container spacing={2} justifyContent="center" sx={{ mt: 2 }}>
-  {results.map((item, idx) => {
 
-    // ✅ Format title like "2 bananas" or "150 g chicken"
-    const qty = item.quantity && item.unit
-      ? `${item.quantity} ${item.unit}`
-      : "";
+      {/* Results */}
+      <Fade in={!loading && results.length > 0} timeout={300}>
+        <Grid container spacing={2} justifyContent="center" sx={{ mt: 2 }}>
+          {!loading &&
+            results.map((item, idx) => {
+              const qty =
+                item.quantity && item.unit
+                  ? `${item.quantity} ${item.unit}`
+                  : "";
+              const header = qty ? `${qty} ${item.mealName}` : item.mealName;
 
-    // mealName already cleaned by AI
-    const header = qty ? `${qty} ${item.mealName}` : item.mealName;
+              return (
+                <Fade
+                  in={!loading}
+                  timeout={400 + idx * 100}
+                  key={idx}
+                  style={{ transitionDelay: `${idx * 80}ms` }}
+                >
+                  <Grid item>
+                    <Card
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        width: 260,
+                        height: 220,
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 2,
+                        transition: "0.3s",
+                        "&:hover": { boxShadow: 4 },
+                      }}
+                    >
+                      <CardContent>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: "bold", color: "#1976d2", mb: 1 }}
+                        >
+                          {header}
+                        </Typography>
+                        <Typography variant="body2">
+                          Calories: {item.calories.toFixed(2)}
+                        </Typography>
+                        <Typography variant="body2">
+                          Protein: {item.protein} g
+                        </Typography>
+                        <Typography variant="body2">
+                          Carbs: {item.carbs} g
+                        </Typography>
+                        <Typography variant="body2">
+                          Fats: {item.fats} g
+                        </Typography>
+                      </CardContent>
 
-    return (
-      <Fade in={true} timeout={400 + idx * 100} key={idx}>
-        <Grid item>
-          <Card
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              width: 260,
-              height: 220,
-              border: "1px solid #e0e0e0",
-              borderRadius: 2,
-              transition: "0.3s",
-              "&:hover": { boxShadow: 4 },
-            }}
-          >
-            <CardContent>
-              <Typography
-                variant="subtitle1"
-                sx={{ fontWeight: "bold", color: "#1976d2", mb: 1 }}
-              >
-                {header}
-              </Typography>
-              <Typography variant="body2">
-                Calories: {item.calories.toFixed(2)}
-              </Typography>
-              <Typography variant="body2">
-                Protein: {item.protein} g
-              </Typography>
-              <Typography variant="body2">
-                Carbs: {item.carbs} g
-              </Typography>
-              <Typography variant="body2">
-                Fats: {item.fats} g
-              </Typography>
-            </CardContent>
-
-            <CardActions sx={{ justifyContent: "center" }}>
-              <Button
-                size="small"
-                variant="contained"
-                sx={{ bgcolor: "#18b5a7", borderRadius: "20px", px: 3 }}
-                onClick={async () => {
-                  await fetch(`${import.meta.env.VITE_API_URL}/api/meals`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "include",
-                    body: JSON.stringify({
-                      ...item,
-                      mealName: header, // ✅ save clean formatted name
-                    }),
-                  });
-                  onLog("Meal logged successfully!");
-                }}
-              >
-                Log Meal
-              </Button>
-            </CardActions>
-          </Card>
+                      <CardActions sx={{ justifyContent: "center" }}>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          sx={{
+                            bgcolor: "#18b5a7",
+                            borderRadius: "20px",
+                            px: 3,
+                          }}
+                          onClick={async () => {
+                            await fetch(
+                              `${import.meta.env.VITE_API_URL}/api/meals`,
+                              {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                credentials: "include",
+                                body: JSON.stringify({
+                                  ...item,
+                                  mealName: header,
+                                }),
+                              }
+                            );
+                            onLog("Meal logged successfully!");
+                          }}
+                        >
+                          Log Meal
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                </Fade>
+              );
+            })}
         </Grid>
       </Fade>
-    );
-  })}
-</Grid>
-
 
       {/* Not Found Alert */}
       <Dialog open={notFound} onClose={() => setNotFound(false)}>
