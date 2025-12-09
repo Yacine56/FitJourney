@@ -216,7 +216,7 @@ export default function Profile() {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <TextField
                 label="Daily Calorie Goal"
                 type="number"
@@ -225,7 +225,7 @@ export default function Profile() {
                 onChange={(e) => updateField("dailyCalorieGoal", e.target.value)}
                 required
               />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} md={6}>
               <TextField
