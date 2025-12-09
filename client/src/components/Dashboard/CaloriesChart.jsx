@@ -58,7 +58,7 @@ export default function CaloriesChart() {
   return (
     <Box
       sx={{
-        width: "100%",
+        width: "550px",
         height: 360,
         display: "flex",
         flexDirection: "column",

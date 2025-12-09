@@ -89,7 +89,7 @@ export default function WeightTracker() {
 
       {/* Weight Chart */}
       {/* Weight Chart */}
-<Box sx={{ width: "100%", height: 320 }}>
+<Box sx={{ width: "500px", height: 320 }}>
   <ResponsiveContainer width="100%" height="100%">
     <LineChart data={data}>
       <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />

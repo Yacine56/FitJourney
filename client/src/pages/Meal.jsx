@@ -64,7 +64,7 @@ export default function Meal() {
       </Box>
 
       {showCustomForm && (
-        <Box ref={formRef} sx={{ mt: 3 }}>
+        <Box ref={formRef} sx={{ mt: 3, maxWidth: "950px"}}>
           <Paper sx={{ p: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.85)", backdropFilter: "blur(6px)" }}>
             <MealForm onSave={handleSave} />
           </Paper>

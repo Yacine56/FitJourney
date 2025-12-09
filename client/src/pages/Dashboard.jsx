@@ -43,8 +43,8 @@ export default function Dashboard() {
       <Box
         sx={{
           flexGrow: 1,
-          width: "100%",
-          maxWidth: "1100px",
+          width: "1500px",
+        
           mx: "auto",
         }}
       >
@@ -54,6 +54,7 @@ export default function Dashboard() {
           columnSpacing={{ xs: 2, sm: 3, md: 4 }}
           justifyContent="center"
           alignItems="stretch"
+          
         >
           <Grid item xs={12} md={6}>
             <Item><CaloriesChart /></Item>

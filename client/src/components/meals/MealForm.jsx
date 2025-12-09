@@ -43,7 +43,7 @@ export default function MealForm({ selected = null, onSave }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} >
       <TextField
         label="Meal Name"
         name="mealName"

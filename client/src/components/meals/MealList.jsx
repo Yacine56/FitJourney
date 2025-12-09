@@ -52,7 +52,7 @@ function handleConfirmDelete() {
 
 
   return (
-    <Box>
+    <Box sx={{ width: "900px"}}>
       <Typography variant="h6" align="center" sx={{ mb: 2, fontWeight: "bold", color: "#1976d2" }}>
         Meals on {selectedDate}
       </Typography>

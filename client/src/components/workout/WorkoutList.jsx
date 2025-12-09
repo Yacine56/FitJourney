@@ -53,7 +53,7 @@ async function fetchWorkouts(date = selectedDate) {
   }, [selectedDate]);
 
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box sx={{ mt: 4, width: "900px" }}>
       <Typography
         variant="h6"
         align="center"
