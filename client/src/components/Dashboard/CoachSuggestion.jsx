@@ -76,9 +76,9 @@ export default function CoachSuggestion() {
           </Typography>
         </Box>
 
-        <IconButton size="small" onClick={fetchSuggestion}>
+        {/* <IconButton size="small" onClick={fetchSuggestion}>
           <RefreshIcon fontSize="small" />
-        </IconButton>
+        </IconButton> */}
       </Paper>
     </Box>
   );
