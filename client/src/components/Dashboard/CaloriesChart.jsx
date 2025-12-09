@@ -77,7 +77,7 @@ export default function CaloriesChart() {
           textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
         }}
       >
-       Calorie Consumption Trends Across the Most Recent Seven Days
+       Calorie Consumption Over the Most Recent Seven Days
       </Typography>
 
       <Box
