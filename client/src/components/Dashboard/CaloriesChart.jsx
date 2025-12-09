@@ -77,7 +77,7 @@ export default function CaloriesChart() {
           textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
         }}
       >
-        Calories Intake (Last 7 Recorded Days)------------
+        Calories Intake (Last 7 Recorded Days)
       </Typography>
 
       <Box
