@@ -105,7 +105,7 @@ export default function WorkoutSearch({ onSelect }) {
                     Muscle: {w.muscle}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Equipment: {w.equipment  || "Dumbbells"}
+                    Equipment: { "Dumbbells"}
                   </Typography>
                 </CardContent>
 
