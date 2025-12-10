@@ -6,7 +6,7 @@ export default function WorkoutForm({ selected, onSave }) {
     name: "",
     type: "",
     muscle: "",
-    equipment: "",
+    equipment: "Dumbbells",
     sets: "",
     reps: "",
     weight: "",
