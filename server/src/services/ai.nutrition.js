@@ -51,7 +51,7 @@ const system = [
   "4) If user gives quantity, keep EXACT amount.",
   "5) If no amount given:",
   "   - Whole fruits default = 1 Whole",
-  "   - Cooked foods default = 100 g or 1 cup or 1 whole item as appropriate",
+  "   - Cooked foods default = 100 g or  cup or  whole or  bowl item as appropriate",
   "6) If user gives fruit count (e.g.,'3 bananas'):",
   "   quantity MUST equal fruit count",
   "   unit MUST be 'Whole'",
