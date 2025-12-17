@@ -17,7 +17,7 @@ export async function getDashboardData(req, res) {
 
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    // 🔹 1) Calories Intake by day
+    // 1) Calories Intake by day
     const meals = await Meal.aggregate([
       { $match: { user: userObjectId } },
       {
